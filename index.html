@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analyse des occupations - Questionnaire</title>
+    <!-- Le lien vers style.css n'est pas nécessaire si tout le CSS est dans la balise <style> -->
+    <!-- <link rel="stylesheet" href="style.css"> -->
+    <style>
+        body {
+            font-family: sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        h1, h3, h4 {
+            color: #0056b3; /* Une couleur bleue pour les titres */
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        h3 {
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+            margin-top: 20px;
+            margin-bottom: 15px;
+        }
+
+        h4 {
+            margin-bottom: 8px;
+            font-size: 1em;
+        }
+
+        .occupation-block {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 5px;
+            background-color: #fafafa;
+        }
+
+        .variable-group {
+            margin-bottom: 15px;
+        }
+
+        .options {
+            display: flex; /* Affiche les options en ligne */
+            flex-wrap: wrap; /* Permet de passer à la ligne si l'espace manque */
+            gap: 10px; /* Espacement entre les options */
+            align-items: center; /* Centre verticalement le texte et le radio button */
+        }
+
+        /* Masquer les radio buttons visuellement mais les laisser fonctionnels pour l'accessibilité */
+         .options input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none; /* Ne pas intercepter les clics */
+            width: 0; /* Assurez-vous qu'il ne prend pas d'espace */
+            height: 0;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Style pour les labels qui servent de boutons */
+        .options label {
+            display: inline-block; /* Ou block si vous voulez qu'ils soient empilés */
+            cursor: pointer;
+            padding: 8px 12px; /* Ajustez le padding pour le look bouton */
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+            text-align: center;
+            min-width: 20px; /* Utile pour aligner les chiffres */
+             box-sizing: border-box; /* Inclure padding et border dans la largeur/hauteur */
+        }
+
+        /* Ajustement pour les labels de l'échelle 0-10 */
+        .options.scale label {
+            padding: 8px; /* Peut-être un padding uniforme pour les chiffres */
+            min-width: 15px; /* Ajuster si nécessaire */
+        }
+
+        /* Style au survol des options non sélectionnées */
+        .options label:hover:not(:has(input[type="radio"]:checked)) {
+             background-color: #e9e9e9;
+             border-color: #bbb;
+             color: #333;
+        }
+
+
+        /* Style de l'option sélectionnée (label qui CONTIENT un radio button checked) */
+        /* MODIFICATION ICI : Utilisation du sélecteur :has() */
+        .options label:has(input[type="radio"]:checked) {
+            background-color: #28a745; /* Vert du bouton Envoyer */
+            color: white;
+            border-color: #28a745;
+        }
+
+        /* Style au survol de l'option sélectionnée (label qui CONTIENT un radio button checked) */
+        /* MODIFICATION ICI : Utilisation du sélecteur :has() */
+        .options label:has(input[type="radio"]:checked):hover {
+            background-color: #218838; /* Vert plus foncé */
+            border-color: #218838;
+        }
+
+
+        button[type="submit"] {
+            display: block; /* Bouton en bloc pour prendre toute la largeur */
+            width: 100%;
+            padding: 12px 20px;
+            background-color: #28a745; /* Bouton vert */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-top: 30px;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #218838; /* Vert un peu plus foncé au survol */
+        }
+
+        ul {
+            margin-bottom: 20px;
+        }
+
+        li {
+            margin-bottom: 5px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Questionnaire : Analyse de vos occupations</h1>
+        <p>
+            Ce questionnaire vise à analyser comment vous investissez votre temps par rapport à ce qui est important pour vous et à votre satisfaction.
+            Pour chaque occupation listée, veuillez indiquer :
+        </p>
+        <ul>
+            <li>Le temps approximatif investi (Peu, Moyen, Beaucoup) sur une base hebdomadaire au cours des six derniers mois.</li>
+            <li>L'importance de cette occupation pour vous (sur une échelle de 0 à 10, où 0 = pas important, 10 = très important).</li>
+            <li>La satisfaction que vous retirez de cette occupation (sur une échelle de 0 à 10, où 0 = pas satisfait, 10 = très satisfait).</li>
+        </ul>
+        <p>Veuillez répondre pour chacune des occupations listées ci-dessous.</p>
+
+        <form id="occupation-form">
+            <!-- Liste des occupations -->
+            <div class="occupation-block">
+                <h3>1. Temps passé avec le partenaire</h3>
+                <div class="variable-group">
+                    <h4>Temps investi :</h4>
+                    <div class="options">
+                        <label><input type="radio" name="oc1_time" value="peu" required> Peu</label>
+                        <label><input type="radio" name="oc1_time" value="moyen"> Moyen</label>
+                        <label><input type="radio" name="oc1_time" value="beaucoup"> Beaucoup</label>
+                    </div>
+                </div>
+                <div class="variable-group">
+                    <h4>Importance (0-10) :</h4>
+                    <div class="options scale">
+                        <label><input type="radio" name="oc1_importance" value="0" required> 0</label>
+                        <label><input type="radio" name="oc1_importance" value="1"> 1</label>
+                        <label><input type="radio" name="oc1_importance" value="2"> 2</label>
+                        <label><input type="radio" name="oc1_importance" value="3"> 3</label>
+                        <label><input type="radio" name="oc1_importance" value="4"> 4</label>
+                        <label><input type="radio" name="oc1_importance" value="5"> 5</label>
+                        <label><input type="radio" name="oc1_importance" value="6"> 6</label>
+                        <label><input type="radio" name="oc1_importance" value="7"> 7</label>
+                        <label><input type="radio" name="oc1_importance" value="8"> 8</label>
+                        <label><input type="radio" name="oc1_importance" value="9"> 9</label>
+                        <label><input type="radio" name="oc1_importance" value="10"> 10</label>
+                    </div>
+                </div>
+                <div class="variable-group">
+                    <h4>Satisfaction (0-10) :</h4>
+                    <div class="options scale">
+                        <label><input type="radio" name="oc1_satisfaction" value="0" required> 0</label>
+                        <label><input type="radio" name="oc1_satisfaction" value="1"> 1</label>
+                        <label><input type="radio" name="oc1_satisfaction" value="2"> 2</label>
+                        <label><input type="radio" name="oc1_satisfaction" value="3"> 3</label>
+                        <label><input type="radio" name="oc1_satisfaction" value="4"> 4</label>
+                        <label><input type="radio" name="oc1_satisfaction" value="5"> 5</label>
+                        <label><input type="radio" name="oc1_satisfaction" value="6"> 6</label>
+                        <label><input type="radio" name="oc1_satisfaction" value="7"> 7</label>
+                        <label><input type="radio" name="oc1_satisfaction" value="8"> 8</label>
+                        <label><input type="radio" name="oc1_satisfaction" value="9"> 9</label>
+                        <label><input type="radio" name="oc1_satisfaction" value="10"> 10</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="occupation-block">
+                <h3>2. S'engager avec les enfants, les parents, les frères et sœurs</h3>
+                 <div class="variable-group">
+                    <h4>Temps investi :</h4>
+                    <div class="options">
+                        <label><input type="radio" name="oc2_time" value="peu" required> Peu</label>
+                        <label><input type="radio" name="oc2_time" value="moyen"> Moyen</label>
+                        <label><input type="radio" name="oc2_time" value="beaucoup"> Beaucoup</label>
+                    </div>
+                </div>
+                <div class="variable-group">
+                    <h4>Importance (0-10) :</h4>
+                    <div class="options scale">
+                        <label><input type="radio" name="oc2_importance" value="0" required> 0</label>
+                        <label><input type="radio" name="oc2_importance" value="1"> 1</label>
+                        <label><input type="radio" name="oc2_importance" value="2"> 2</label>
+                        <label><input type="radio" name="oc2_importance" value="3"> 3</label>
+                        <label><input type="radio" name="oc2_importance" value="4"> 4</label>
+                        <label><input type="radio" name="oc2_importance" value="5"> 5</label>
+                        <label><input type="radio" name="oc2_importance" value="6"> 6</label>
+                        <label><input type="radio" name="oc2_importance" value="7"> 7</label>
+                        <label><input type="radio" name="oc2_importance" value="8"> 8</label>
+                        <label><input type="radio" name="oc2_importance" value="9"> 9</label>
+                        <label><input type="radio" name="oc2_importance" value="10"> 10</label>
+                    </div>
+                </div>
+                <div class="variable-group">
+                    <h4>Satisfaction (0-10) :</h4>
+                    <div class="options scale">
+                        <label><input type="radio" name="oc2_satisfaction" value="0" required> 0</label>
+                        <label><input type="radio" name="oc2_satisfaction" value="1"> 1</label>
+                        <label><input type="radio" name="oc2_satisfaction" value="2"> 2</label>
+                        <label><input type="radio" name="oc2_satisfaction" value="3"> 3</label>
+                        <label><input type="radio" name="oc2_satisfaction" value="4"> 4</label>
+                        <label><input type="radio" name="oc2_satisfaction" value="5"> 5</label>
+                        <label><input type="radio" name="oc2_satisfaction" value="6"> 6</label>
+                        <label><input type="radio" name="oc2_satisfaction" value="7"> 7</label>
+                        <label><input type="radio" name="oc2_satisfaction" value="8"> 8</label>
+                        <label><input type="radio" name="oc2_satisfaction" value="9"> 9</label>
+                        <label><input type="radio" name="oc2_satisfaction" value="10"> 10</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="occupation-block">
+                <h3>3. Temps passé avec ses collègues ou partenaires</h3>
+                <div class="variable-group">
+                    <h4>Temps investi :</h4>
+                    <div class="options">
+                        <label><input type="radio" name="oc3_time" value="peu" required> Peu</label>
+                        <label><input type="radio" name="oc3_time" value="moyen"> Moyen</label>
+                        <label><input type="radio" name="oc3_time" value="beaucoup"> Beaucoup</label>
+                    </div>
+                </div>
+                <div class="variable-group">
+                    <h4>Importance (0-10) :</h4>
+                    <div class="options scale">
+                        <label><input type="radio" name="oc3_importance" value="0" required> 0</label>
+                        <label><input type="radio" name="oc3_importance" value="1"> 1</label>
+                        <label><input type="radio" name="oc3_importance" value="2"> 2</label>
+                        <label><input type="radio" name="oc3_importance" value="3"> 3</label>
+                        <label><input type="radio" name="oc3_importance" value="4"> 4</label>
+                        <label><input type="radio" name="oc3_importance" value="5"> 5</label>
+                        <label><input type="radio" name="oc3_importance" value="6"> 6</label>
+                        <label><input type="radio" name="oc3_importance" value="7"> 7</label>
+                        <label><input type="radio" name="oc3_importance" value="8"> 8</label>
+                        <label><input type="radio" name="oc3_importance" value="9"> 9</label>
+                        <label><input type="radio" name="oc3_importance" value="10"> 10</label>
+                    </div>
+                </div>
+                <div class="variable-group">
+                    <h4>Satisfaction (0-10) :</h4>
+                    <div class="options scale">
+                        <label><input type="radio" name="oc3_satisfaction" value="0" required> 0</label>
+                        <label><input type="radio" name="oc3_satisfaction" value="1"> 1</label>
+                        <label><input type="radio" name="oc3_satisfaction" value="2"> 2</label>
+                        <label><input type="radio" name="oc3_satisfaction" value="3"> 3</label>
+                        <label><input type="radio" name="oc3_satisfaction" value="4"> 4</label>
+                        <label><input type="radio" name="oc3_satisfaction" value="5"> 5</label>
+                        <label><input type="radio" name="oc3_satisfaction" value="6"> 6</label>
+                        <label><input type="radio" name="oc3_satisfaction" value="7"> 7</label>
+                        <label><input type="radio" name="oc3_satisfaction" value="8"> 8</label>
+                        <label><input type="radio" name="oc3_satisfaction" value="9"> 9</label>
+                        <label><input type="radio" name="oc3_satisfaction" value="10"> 10</label>
+                    </div>
+                </div>
+            </div>
+
+             <div class="occupation-block">
+                <h3>4. Du temps avec des amis</h3>
+                 <div class="variable-group">
+                    <h4>Temps investi :</h4>
+                    <div class="options">
+                        <label><input type="radio" name="oc4_time" value="peu" required> Peu</label>
+                        <label><input type="radio" name="oc4_time" value="moyen"> Moyen</label>
+                        <label><input type="radio" name="oc4_time" value="beaucoup"> Beaucoup</label>
+                    </div>
+                </div>
+                <div class="variable-group">
+                    <h4>Importance (0-10) :</h4>
+                    <div class="options scale">
+                        <label><input type="radio" name="oc4_importance" value="0" required> 0</label>
+                        <label><input type="radio" name="oc4_importance" value="1"> 1</label>
+                        <label><input type="radio" name="oc4_importance" value="2"> 2</label>
+                        <label><input type="radio" name="oc4_importance" value="3"> 3</label>
+                        <label><input type="radio" name="oc4_importance" value="4"> 4</label>
+                        <label><input type="radio" name="oc4_importance" value="5"> 5</label>
+                        <label><input type="radio" name="oc4_importance" value="6"> 6</label>
+                        <label><input type="radio" name="oc4_importance" value="7"> 7</label>
+                        <label><input type="radio" name="oc4_importance" value="8"> 8</label>
+                        <label><input type="radio" name="oc4_importance" value="9"> 9</label>
+                        <label><input type="radio" name="oc4_importance" value="10"> 10</label>
+                    </div>
+                </div>
+                <div class="variable-group">
+                    <h4>Satisfaction (0-10) :</h4>
+                    <div class="options scale">
+                        <label><input type="radio" name="oc4_satisfaction" value="0" required> 0</label>
+                        <label><input type="radio" name="oc4_satisfaction" value="1"> 1</label>
+                        <label><input type="radio" name="oc4_satisfaction" value="2"> 2</label>
+                        <label><input type="radio" name="oc4_satisfaction" value="3"> 3</label>
+                        <label><input type="radio" name="oc4_satisfaction" value="4"> 4</label>
+                        <label><input type="radio" name="oc4_satisfaction" value="5"> 5</label>
+                        <label><input type="radio" name="oc4_satisfaction" value="6"> 6</label>
+                        <label><input type="radio" name="oc4_satisfaction" value="7"> 7</label>
+                        <label><input type="radio" name="oc4_satisfaction" value="8"> 8</label>
+                        <label><input type="radio" name="oc4_satisfaction" value="9"> 9</label>
+                        <label><input type="radio" name="oc4_satisfaction" value="10"> 10</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="occupation-block">
+                <h3>5. Exercice, physiothérapie</h3>
+                <div class="variable-group">
+                    <h4>Temps investi :</h4>
+                    <div class="options">
+                        <label><input type="radio" name="oc5_time" value="peu" required> Peu</label>
+                        <label><input type="radio" name="oc5_time" value="moyen"> Moyen</label>
+                        <label><input type="radio" name="oc5_time" value="beaucoup"> Beaucoup</label>
+                    </div>
+                </div>
+                <div class="variable-group">
+                    <h4>Importance (0-10) :</h4>
+                    <div class="options scale">
+                        <label><input type="radio" name="oc5_importance" value="0" required> 0</label>
+                        <label><input type="radio" name="oc5_importance" value="1"> 1</label>
+                        <label><input type="radio" name="oc5_importance" value="2"> 2</label>
+                        <label><input type="radio" name="oc5_importance" value="3"> 3</label>
+                        <label><input type="radio" name="oc5_importance" value="4"> 4</label>
+                        <label><input type="radio" name="oc5_importance" value="5"> 5</label>
+                        <label><input type="radio" name="oc5_importance" value="6"> 6</label>
+                        <label><input type="radio" name="oc5_importance" value="7"> 7</label>
+                        <label><input type="radio" name="oc5_importance" value="8"> 8</label>
+                        <label><input type="radio" name="oc5_importance" value="9"> 9</label>
+                        <label><input type="radio" name="oc5_importance" value="10"> 10</label>
+                    </div>
+                </div>
+                <div class="variable-group">
+                    <h4>Satisfaction (0-10) :</h4>
+                    <div class="options scale">
+                        <label><input type="radio" name="oc5_satisfaction" value="0" required> 0</label>
+                        <label><input type="radio" name="oc5_satisfaction" value="1"> 1</label>
+                        <label><input type="radio" name="oc5_satisfaction" value="2"> 2</label>
+                        <label><input type="radio" name="oc5_satisfaction" value="3"> 3</label>
+                        <label><input type="radio" name="oc5_satisfaction" value="4"> 4</label>
+                        <label><input type="radio" name="oc5_satisfaction" value="5"> 5</label>
+                        <label><input type="radio" name="oc5_satisfaction" value="6"> 6</label>
+                        <label><input type="radio" name="oc5_satisfaction" value="7"> 7</label>
+                        <label><input type="radio" name="oc5_satisfaction" value="8"> 8</label>
+                        <label><input type="radio" name="oc5_satisfaction" value="9"> 9</label>
+                        <label><input type="radio" name="oc5_satisfaction" value="10"> 10</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="occupation-block">
+                <h3>6. Psychothérapie, méditation</h3>
+                <div class="variable-group">
+                    <h4>Temps investi :</h4>
+                    <div class="options">
+                        <label><input type="radio" name="oc6_time" value="peu" required> Peu</label>
+                        <label><input type="radio" name="oc6_time" value="moyen"> Moyen</label>
+                        <label><input type="radio" name="oc6_time" value="beaucoup"> Beaucoup</label>
+                    </div>
+                </div>
+                <div class="variable-group">
+                    <h4>Importance (0-10) :</h4>
+                    <div class="options scale">
+                        <label><input type="radio" name="oc6_importance" value="0" required> 0</label>
+                        <label><input type="radio" name="oc6_importance" value="1"> 1</label>
+                        <label><input type="radio" name="oc6_importance" value="2"> 2</label>
+                        <label><input type="radio" name="oc6_importance" value="3"> 3</label>
+                        <label><input type="radio" name="oc6_importance" value="4"> 4</label>
+                        <label><input type="radio" name="oc6_importance" value="5"> 5</label>
+                        <label><input type="radio" name="oc6_importance" value="6"> 6</label>
+                        <label><input type="radio" name="oc6_importance" value="7"> 7</label>
+                        <label><input type="radio" name="oc6_importance" value="8"> 8</label>
+                        <label><input type="radio" name="oc6_importance" value="9"> 9</label>
+                        <label><input type="radio" name="oc6_importance" value="10"> 10</label>
+                    </div>
+                </div>
+                <div class="variable-group">
+                    <h4>Satisfaction (0-10) :</h4>
+                    <div class="options scale">
+                        <label><input type="radio" name="oc6_satisfaction" value="0" required> 0</label>
+                        <label><input type="radio" name="oc6_satisfaction" value="1"> 1</label>
+                        <label><input type="radio" name="oc6_satisfaction" value="2"> 2</label>
+                        <label><input type="radio" name="oc6_satisfaction" value="3"> 3</label>
+                        <label><input type="radio" name="oc6_satisfaction" value="4"> 4</label>
+                        <label><input type="radio" name="oc6_satisfaction" value="5"> 5</label>
+                        <label><input type="radio" name="oc6_satisfaction" value="6"> 6</label>
+                        <label><input type="radio" name="oc6_satisfaction" value="7"> 7</label>
+                        <label><input type="radio" name="oc6_satisfaction" value="8"> 8</label>
+                        <label><input type="radio" name="oc6_satisfaction" value="9"> 9</label>
+                        <label><input type="radio" name="oc6_satisfaction" value="10"> 10</label>
+                    </div>
+                </div>
+            </div>
+
+             <div class="occupation-block">
+                <h3>7. Prendre en compte les conséquences en amont de toute action</h3>
+                 <div class="variable-group">
+                    <h4>Temps investi :</h4>
+                    <div class="options">
+                        <label><input type="radio" name="oc7_time" value="peu" required> Peu</label>
+                        <label><input type="radio" name="oc7_time" value="moyen"> Moyen</label>
+                        <label><input type="radio" name="oc7_time" value="beaucoup"> Beaucoup</label>
+                    </div>
+                </div>
+                <div class="variable-group">
+                    <h4>Importance (0-10) :</h4>
+                    <div class="options scale">
+                        <label><input type="radio" name="oc7_importance" value="0" required> 0</label>
+                        <label><input type="radio" name="oc7_importance" value="1"> 1</label>
+                        <label><input type="radio" name="oc7_importance" value="2"> 2</label>
+                        <label><input type="radio" name="oc7_importance" value="3"> 3</label>
+                        <label><input type="radio" name="oc7_importance" value="4"> 4</label>
+                        <label><input type="radio" name="oc7_importance" value="5"> 5</label>
+                        <label><input type="radio" name="oc7_importance" value="6"> 6</label>
+                        <label><input type="radio" name="oc7_importance" value="7"> 7</label>
+                        <label><input type="radio" name="oc7_importance" value="8"> 8</label>
+                        <label><input type="radio" name="oc7_importance" value="9"> 9</label>
+                        <label><input type="radio" name="oc7_importance" value="10"> 10</label>
+                    </div>
+                </div>
+                <div class="variable-group">
+                    <h4>Satisfaction (0-10) :</h4>
+                    <div class="options scale">
+                        <label><input type="radio" name="oc7_satisfaction" value="0" required> 0</label>
+                        <label><input type="radio" name="oc7_satisfaction" value="1"> 1</label>
+                        <label><input type="radio" name="oc7_satisfaction" value="2"> 2</label>
+                        <label><input type="radio" name="oc7_satisfaction" value="3"> 3</label>
+                        <label><input type="radio" name="oc7_satisfaction" value="4"> 4</label>
+                        <label><input type="radio" name="oc7_satisfaction" value="5"> 5</label>
+                        <label><input type="radio" name="oc7_satisfaction" value="6"> 6</label>
+                        <label><input type="radio" name="oc7_satisfaction" value="7"> 7</label>
+                        <label><input type="radio" name="oc7_satisfaction" value="8"> 8</label>
+                        <label><input type="radio" name="oc7_satisfaction" value="9"> 9</label>
+                        <label><input type="radio" name="oc7_satisfaction" value="10"> 10</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="occupation-block">
+                <h3>8. Pratique religieuse</h3>
+                <div class="variable-group">
+                    <h4>Temps investi :</h4>
+                    <div class="options">
+                        <label><input type="radio" name="oc8_time" value="peu" required> Peu</label>
+                        <label><input type="radio" name="oc8_time" value="moyen"> Moyen</label>
+                        <label><input type="radio" name="oc8_time" value="beaucoup"> Beaucoup</label>
+                    </div>
+                </div>
+                <div class="variable-group">
+                    <h4>Importance (0-10) :</h4>
+                    <div class="options scale">
+                        <label><input type="radio" name="oc8_importance" value="0" required> 0</label>
+                        <label><input type="radio" name="oc8_importance" value="1"> 1</label>
+                        <label><input type="radio" name="oc8_importance" value="2"> 2</label>
+                        <label><input type="radio" name="oc8_importance" value="3"> 3</label>
+                        <label><input type="radio" name="oc8_importance" value="4"> 4</label>
+                        <label><input type="radio" name="oc8_importance" value="5"> 5</label>
+                        <label><input type="radio" name="oc8_importance" value="6"> 6</label>
+                        <label><input type="radio" name="oc8_importance" value="7"> 7</label>
+                        <label><input type="radio" name="oc8_importance" value="8"> 8</label>
+                        <label><input type="radio" name="oc8_importance" value="9"> 9</label>
+                        <label><input type="radio" name="oc8_importance" value="10"> 10</label>
+                    </div>
+                </div>
+                <div class="variable-group">
+                    <h4>Satisfaction (0-10) :</h4>
+                    <div class="options scale">
+                        <label><input type="radio" name="oc8_satisfaction" value="0" required> 0</label>
+                        <label><input type="radio" name="oc8_satisfaction" value="1"> 1</label>
+                        <label><input type="radio" name="oc8_satisfaction" value="2"> 2</label>
+                        <label><input type="radio" name="oc8_satisfaction" value="3"> 3</label>
+                        <label><input type="radio" name="oc8_satisfaction" value="4"> 4</label>
+                        <label><input type="radio" name="oc8_satisfaction" value="5"> 5</label>
+                        <label><input type="radio" name="oc8_satisfaction" value="6"> 6</label>
+                        <label><input type="radio" name="oc8_satisfaction" value="7"> 7</label>
+                        <label><input type="radio" name="oc8_satisfaction" value="8"> 8</label>
+                        <label><input type="radio" name="oc8_satisfaction" value="9"> 9</label>
+                        <label><input type="radio" name="oc8_satisfaction" value="10"> 10</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="occupation-block">
+                <h3>9. Appartenance à des clubs locaux</h3>
+                 <div class="variable-group">
+                    <h4>Temps investi :</h4>
+                    <div class="options">
+                        <label><input type="radio" name="oc9_time" value="peu" required> Peu</label>
+                        <label><input type="radio" name="oc9_time" value="moyen"> Moyen</label>
+                        <label><input type="radio" name="oc9_time" value="beaucoup"> Beaucoup</label>
+                    </div>
+                </div>
+                <div class="variable-group">
+                    <h4>Importance (0-10) :</h4>
+                    <div class="options scale">
+                        <label><input type="radio" name="oc9_importance" value="0" required> 0</label>
+                        <label><input type="radio" name="oc9_importance" value="1"> 1</label>
+                        <label><input type="radio" name="oc9_importance" value="2"> 2</label>
+                        <label><input type="radio" name="oc9_importance" value="3"> 3</label>
+                        <label><input type="radio" name="oc9_importance" value="4"> 4</label>
+                        <label><input type="radio" name="oc9_importance" value="5"> 5</label>
+                        <label><input type="radio" name="oc9_importance" value="6"> 6</label>
+                        <label><input type="radio" name="oc9_importance" value="7"> 7</label>
+                        <label><input type="radio" name="oc9_importance" value="8"> 8</label>
+                        <label><input type="radio" name="oc9_importance" value="9"> 9</label>
+                        <label><input type="radio" name="oc9_importance" value="10"> 10</label>
+                    </div>
+                </div>
+                <div class="variable-group">
+                    <h4>Satisfaction (0-10) :</h4>
+                    <div class="options scale">
+                        <label><input type="radio" name="oc9_satisfaction" value="0" required> 0</label>
+                        <label><input type="radio" name="oc9_satisfaction" value="1"> 1</label>
+                        <label><input type="radio" name="oc9_satisfaction" value="2"> 2</label>
+                        <label><input type="radio" name="oc9_satisfaction" value="3"> 3</label>
+                        <label><input type="radio" name="oc9_satisfaction" value="4"> 4</label>
+                        <label><input type="radio" name="oc9_satisfaction" value="5"> 5</label>
+                        <label><input type="radio" name="oc9_satisfaction" value="6"> 6</label>
+                        <label><input type="radio" name="oc9_satisfaction" value="7"> 7</label>
+                        <label><input type="radio" name="oc9_satisfaction" value="8"> 8</label>
+                        <label><input type="radio" name="oc9_satisfaction" value="9"> 9</label>
+                        <label><input type="radio" name="oc9_satisfaction" value="10"> 10</label>
+                    </div>
+                </div>
+            </div>
+
+             <div class="occupation-block">
+                <h3>10. Activisme bénévole</h3>
+                 <div class="variable-group">
+                    <h4>Temps investi :</h4>
+                    <div class="options">
+                        <label><input type="radio" name="oc10_time" value="peu" required> Peu</label>
+                        <label><input type="radio" name="oc10_time" value="moyen"> Moyen</label>
+                        <label><input type="radio" name="oc10_time" value="beaucoup"> Beaucoup</label>
+                    </div>
+                </div>
+                <div class="variable-group">
+                    <h4>Importance (0-10) :</h4>
+                    <div class="options scale">
+                        <label><input type="radio" name="oc10_importance" value="0" required> 0</label>
+                        <label><input type="radio" name="oc10_importance" value="1"> 1</label>
+                        <label><input type="radio" name="oc10_importance" value="2"> 2</label>
+                        <label><input type="radio" name="oc10_importance" value="3"> 3</label>
+                        <label><input type="radio" name="oc10_importance" value="4"> 4</label>
+                        <label><input type="radio" name="oc10_importance" value="5"> 5</label>
+                        <label><input type="radio" name="oc10_importance" value="6"> 6</label>
+                        <label><input type="radio" name="oc10_importance" value="7"> 7</label>
+                        <label><input type="radio" name="oc10_importance" value="8"> 8</label>
+                        <label><input type="radio" name="oc10_importance" value="9"> 9</label>
+                        <label><input type="radio" name="oc10_importance" value="10"> 10</label>
+                    </div>
+                </div>
+                <div class="variable-group">
+                    <h4>Satisfaction (0-10) :</h4>
+                    <div class="options scale">
+                        <label><input type="radio" name="oc10_satisfaction" value="0" required> 0</label>
+                        <label><input type="radio" name="oc10_satisfaction" value="1"> 1</label>
+                        <label><input type="radio" name="oc10_satisfaction" value="2"> 2</label>
+                        <label><input type="radio" name="oc10_satisfaction" value="3"> 3</label>
+                        <label><input type="radio" name="oc10_satisfaction" value="4"> 4</label>
+                        <label><input type="radio" name="oc10_satisfaction" value="5"> 5</label>
+                        <label><input type="radio" name="oc10_satisfaction" value="6"> 6</label>
+                        <label><input type="radio" name="oc10_satisfaction" value="7"> 7</label>
+                        <label><input type="radio" name="oc10_satisfaction" value="8"> 8</label>
+                        <label><input type="radio" name="oc10_satisfaction" value="9"> 9</label>
+                        <label><input type="radio" name="oc10_satisfaction" value="10"> 10</label>
+                    </div>
+                </div>
+            </div>
+
+             <div class="occupation-block">
+                <h3>11. Travail</h3>
+                 <div class="variable-group">
+                    <h4>Temps investi :</h4>
+                    <div class="options">
+                        <label><input type="radio" name="oc11_time" value="peu" required> Peu</label>
+                        <label><input type="radio" name="oc11_time" value="moyen"> Moyen</label>
+                        <label><input type="radio" name="oc11_time" value="beaucoup"> Beaucoup</label>
+                    </div>
+                </div>
+                <div class="variable-group">
+                    <h4>Importance (0-10) :</h4>
+                    <div class="options scale">
+                        <label><input type="radio" name="oc11_importance" value="0" required> 0</label>
+                        <label><input type="radio" name="oc11_importance" value="1"> 1</label>
+                        <label><input type="radio" name="oc11_importance" value="2"> 2</label>
+                        <label><input type="radio" name="oc11_importance" value="3"> 3</label>
+                        <label><input type="radio" name="oc11_importance" value="4"> 4</label>
+                        <label><input type="radio" name="oc11_importance" value="5"> 5</label>
+                        <label><input type="radio" name="oc11_importance" value="6"> 6</label>
+                        <label><input type="radio" name="oc11_importance" value="7"> 7</label>
+                        <label><input type="radio" name="oc11_importance" value="8"> 8</label>
+                        <label><input type="radio" name="oc11_importance" value="9"> 9</label>
+                        <label><input type="radio" name="oc11_importance" value="10"> 10</label>
+                    </div>
+                </div>
+                <div class="variable-group">
+                    <h4>Satisfaction (0-10) :</h4>
+                    <div class="options scale">
+                        <label><input type="radio" name="oc11_satisfaction" value="0" required> 0</label>
+                        <label><input type="radio" name="oc11_satisfaction" value="1"> 1</label>
+                        <label><input type="radio" name="oc11_satisfaction" value="2"> 2</label>
+                        <label><input type="radio" name="oc11_satisfaction" value="3"> 3</label>
+                        <label><input type="radio" name="oc11_satisfaction" value="4"> 4</label>
+                        <label><input type="radio" name="oc11_satisfaction" value="5"> 5</label>
+                        <label><input type="radio" name="oc11_satisfaction" value="6"> 6</label>
+                        <label><input type="radio" name="oc11_satisfaction" value="7"> 7</label>
+                        <label><input type="radio" name="oc11_satisfaction" value="8"> 8</label>
+                        <label><input type="radio" name="oc11_satisfaction" value="9"> 9</label>
+                        <label><input type="radio" name="oc11_satisfaction" value="10"> 10</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="occupation-block">
+                <h3>12. Cours, formations</h3>
+                <div class="variable-group">
+                    <h4>Temps investi :</h4>
+                    <div class="options">
+                        <label><input type="radio" name="oc12_time" value="peu" required> Peu</label>
+                        <label><input type="radio" name="oc12_time" value="moyen"> Moyen</label>
+                        <label><input type="radio" name="oc12_time" value="beaucoup"> Beaucoup</label>
+                    </div>
+                </div>
+                <div class="variable-group">
+                    <h4>Importance (0-10) :</h4>
+                    <div class="options scale">
+                        <label><input type="radio" name="oc12_importance" value="0" required> 0</label>
+                        <label><input type="radio" name="oc12_importance" value="1"> 1</label>
+                        <label><input type="radio" name="oc12_importance" value="2"> 2</label>
+                        <label><input type="radio" name="oc12_importance" value="3"> 3</label>
+                        <label><input type="radio" name="oc12_importance" value="4"> 4</label>
+                        <label><input type="radio" name="oc12_importance" value="5"> 5</label>
+                        <label><input type="radio" name="oc12_importance" value="6"> 6</label>
+                        <label><input type="radio" name="oc12_importance" value="7"> 7</label>
+                        <label><input type="radio" name="oc12_importance" value="8"> 8</label>
+                        <label><input type="radio" name="oc12_importance" value="9"> 9</label>
+                        <label><input type="radio" name="oc12_importance" value="10"> 10</label>
+                    </div>
+                </div>
+                <div class="variable-group">
+                    <h4>Satisfaction (0-10) :</h4>
+                    <div class="options scale">
+                        <label><input type="radio" name="oc12_satisfaction" value="0" required> 0</label>
+                        <label><input type="radio" name="oc12_satisfaction" value="1"> 1</label>
+                        <label><input type="radio" name="oc12_satisfaction" value="2"> 2</label>
+                        <label><input type="radio" name="oc12_satisfaction" value="3"> 3</label>
+                        <label><input type="radio" name="oc12_satisfaction" value="4"> 4</label>
+                        <label><input type="radio" name="oc12_satisfaction" value="5"> 5</label>
+                        <label><input type="radio" name="oc12_satisfaction" value="6"> 6</label>
+                        <label><input type="radio" name="oc12_satisfaction" value="7"> 7</label>
+                        <label><input type="radio" name="oc12_satisfaction" value="8"> 8</label>
+                        <label><input type="radio" name="oc12_satisfaction" value="9"> 9</label>
+                        <label><input type="radio" name="oc12_satisfaction" value="10"> 10</label>
+                    </div>
+                </div>
+            </div>
+
+             <div class="occupation-block">
+                <h3>13. Planifier l'investissement</h3>
+                 <div class="variable-group">
+                    <h4>Temps investi :</h4>
+                    <div class="options">
+                        <label><input type="radio" name="oc13_time" value="peu" required> Peu</label>
+                        <label><input type="radio" name="oc13_time" value="moyen"> Moyen</label>
+                        <label><input type="radio" name="oc13_time" value="beaucoup"> Beaucoup</label>
+                    </div>
+                </div>
+                <div class="variable-group">
+                    <h4>Importance (0-10) :</h4>
+                    <div class="options scale">
+                        <label><input type="radio" name="oc13_importance" value="0" required> 0</label>
+                        <label><input type="radio" name="oc13_importance" value="1"> 1</label>
+                        <label><input type="radio" name="oc13_importance" value="2"> 2</label>
+                        <label><input type="radio" name="oc13_importance" value="3"> 3</label>
+                        <label><input type="radio" name="oc13_importance" value="4"> 4</label>
+                        <label><input type="radio" name="oc13_importance" value="5"> 5</label>
+                        <label><input type="radio" name="oc13_importance" value="6"> 6</label>
+                        <label><input type="radio" name="oc13_importance" value="7"> 7</label>
+                        <label><input type="radio" name="oc13_importance" value="8"> 8</label>
+                        <label><input type="radio" name="oc13_importance" value="9"> 9</label>
+                        <label><input type="radio" name="oc13_importance" value="10"> 10</label>
+                    </div>
+                </div>
+                <div class="variable-group">
+                    <h4>Satisfaction (0-10) :</h4>
+                    <div class="options scale">
+                        <label><input type="radio" name="oc13_satisfaction" value="0" required> 0</label>
+                        <label><input type="radio" name="oc13_satisfaction" value="1"> 1</label>
+                        <label><input type="radio" name="oc13_satisfaction" value="2"> 2</label>
+                        <label><input type="radio" name="oc13_satisfaction" value="3"> 3</label>
+                        <label><input type="radio" name="oc13_satisfaction" value="4"> 4</label>
+                        <label><input type="radio" name="oc13_satisfaction" value="5"> 5</label>
+                        <label><input type="radio" name="oc13_satisfaction" value="6"> 6</label>
+                        <label><input type="radio" name="oc13_satisfaction" value="7"> 7</label>
+                        <label><input type="radio" name="oc13_satisfaction" value="8"> 8</label>
+                        <label><input type="radio" name="oc13_satisfaction" value="9"> 9</label>
+                        <label><input type="radio" name="oc13_satisfaction" value="10"> 10</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="occupation-block">
+                <h3>14. Lecture, Objets de collection</h3>
+                <div class="variable-group">
+                    <h4>Temps investi :</h4>
+                    <div class="options">
+                        <label><input type="radio" name="oc14_time" value="peu" required> Peu</label>
+                        <label><input type="radio" name="oc14_time" value="moyen"> Moyen</label>
+                        <label><input type="radio" name="oc14_time" value="beaucoup"> Beaucoup</label>
+                    </div>
+                </div>
+                <div class="variable-group">
+                    <h4>Importance (0-10) :</h4>
+                    <div class="options scale">
+                        <label><input type="radio" name="oc14_importance" value="0" required> 0</label>
+                        <label><input type="radio" name="oc14_importance" value="1"> 1</label>
+                        <label><input type="radio" name="oc14_importance" value="2"> 2</label>
+                        <label><input type="radio" name="oc14_importance" value="3"> 3</label>
+                        <label><input type="radio" name="oc14_importance" value="4"> 4</label>
+                        <label><input type="radio" name="oc14_importance" value="5"> 5</label>
+                        <label><input type="radio" name="oc14_importance" value="6"> 6</label>
+                        <label><input type="radio" name="oc14_importance" value="7"> 7</label>
+                        <label><input type="radio" name="oc14_importance" value="8"> 8</label>
+                        <label><input type="radio" name="oc14_importance" value="9"> 9</label>
+                        <label><input type="radio" name="oc14_importance" value="10"> 10</label>
+                    </div>
+                </div>
+                <div class="variable-group">
+                    <h4>Satisfaction (0-10) :</h4>
+                    <div class="options scale">
+                        <label><input type="radio" name="oc14_satisfaction" value="0" required> 0</label>
+                        <label><input type="radio" name="oc14_satisfaction" value="1"> 1</label>
+                        <label><input type="radio" name="oc14_satisfaction" value="2"> 2</label>
+                        <label><input type="radio" name="oc14_satisfaction" value="3"> 3</label>
+                        <label><input type="radio" name="oc14_satisfaction" value="4"> 4</label>
+                        <label><input type="radio" name="oc14_satisfaction" value="5"> 5</label>
+                        <label><input type="radio" name="oc14_satisfaction" value="6"> 6</label>
+                        <label><input type="radio" name="oc14_satisfaction" value="7"> 7</label>
+                        <label><input type="radio" name="oc14_satisfaction" value="8"> 8</label>
+                        <label><input type="radio" name="oc14_satisfaction" value="9"> 9</label>
+                        <label><input type="radio" name="oc14_satisfaction" value="10"> 10</label>
+                    </div>
+                </div>
+            </div>
+
+             <div class="occupation-block">
+                <h3>15. Réseaux sociaux, télévision, jeux vidéo</h3>
+                 <div class="variable-group">
+                    <h4>Temps investi :</h4>
+                    <div class="options">
+                        <label><input type="radio" name="oc15_time" value="peu" required> Peu</label>
+                        <label><input type="radio" name="oc15_time" value="moyen"> Moyen</label>
+                        <label><input type="radio" name="oc15_time" value="beaucoup"> Beaucoup</label>
+                    </div>
+                </div>
+                <div class="variable-group">
+                    <h4>Importance (0-10) :</h4>
+                    <div class="options scale">
+                        <label><input type="radio" name="oc15_importance" value="0" required> 0</label>
+                        <label><input type="radio" name="oc15_importance" value="1"> 1</label>
+                        <label><input type="radio" name="oc15_importance" value="2"> 2</label>
+                        <label><input type="radio" name="oc15_importance" value="3"> 3</label>
+                        <label><input type="radio" name="oc15_importance" value="4"> 4</label>
+                        <label><input type="radio" name="oc15_importance" value="5"> 5</label>
+                        <label><input type="radio" name="oc15_importance" value="6"> 6</label>
+                        <label><input type="radio" name="oc15_importance" value="7"> 7</label>
+                        <label><input type="radio" name="oc15_importance" value="8"> 8</label>
+                        <label><input type="radio" name="oc15_importance" value="9"> 9</label>
+                        <label><input type="radio" name="oc15_importance" value="10"> 10</label>
+                    </div>
+                </div>
+                <div class="variable-group">
+                    <h4>Satisfaction (0-10) :</h4>
+                    <div class="options scale">
+                        <label><input type="radio" name="oc15_satisfaction" value="0" required> 0</label>
+                        <label><input type="radio" name="oc15_satisfaction" value="1"> 1</label>
+                        <label><input type="radio" name="oc15_satisfaction" value="2"> 2</label>
+                        <label><input type="radio" name="oc15_satisfaction" value="3"> 3</label>
+                        <label><input type="radio" name="oc15_satisfaction" value="4"> 4</label>
+                        <label><input type="radio" name="oc15_satisfaction" value="5"> 5</label>
+                        <label><input type="radio" name="oc15_satisfaction" value="6"> 6</label>
+                        <label><input type="radio" name="oc15_satisfaction" value="7"> 7</label>
+                        <label><input type="radio" name="oc15_satisfaction" value="8"> 8</label>
+                        <label><input type="radio" name="oc15_satisfaction" value="9"> 9</label>
+                        <label><input type="radio" name="oc15_satisfaction" value="10"> 10</label>
+                    </div>
+                </div>
+            </div>
+
+             <div class="occupation-block">
+                <h3>16. Vacances, théâtre, événements sportifs</h3>
+                 <div class="variable-group">
+                    <h4>Temps investi :</h4>
+                    <div class="options">
+                        <label><input type="radio" name="oc16_time" value="peu" required> Peu</label>
+                        <label><input type="radio" name="oc16_time" value="moyen"> Moyen</label>
+                        <label><input type="radio" name="oc16_time" value="beaucoup"> Beaucoup</label>
+                    </div>
+                </div>
+                <div class="variable-group">
+                    <h4>Importance (0-10) :</h4>
+                    <div class="options scale">
+                        <label><input type="radio" name="oc16_importance" value="0" required> 0</label>
+                        <label><input type="radio" name="oc16_importance" value="1"> 1</label>
+                        <label><input type="radio" name="oc16_importance" value="2"> 2</label>
+                        <label><input type="radio" name="oc16_importance" value="3"> 3</label>
+                        <label><input type="radio" name="oc16_importance" value="4"> 4</label>
+                        <label><input type="radio" name="oc16_importance" value="5"> 5</label>
+                        <label><input type="radio" name="oc16_importance" value="6"> 6</label>
+                        <label><input type="radio" name="oc16_importance" value="7"> 7</label>
+                        <label><input type="radio" name="oc16_importance" value="8"> 8</label>
+                        <label><input type="radio" name="oc16_importance" value="9"> 9</label>
+                        <label><input type="radio" name="oc16_importance" value="10"> 10</label>
+                    </div>
+                </div>
+                <div class="variable-group">
+                    <h4>Satisfaction (0-10) :</h4>
+                    <div class="options scale">
+                        <label><input type="radio" name="oc16_satisfaction" value="0" required> 0</label>
+                        <label><input type="radio" name="oc16_satisfaction" value="1"> 1</label>
+                        <label><input type="radio" name="oc16_satisfaction" value="2"> 2</label>
+                        <label><input type="radio" name="oc16_satisfaction" value="3"> 3</label>
+                        <label><input type="radio" name="oc16_satisfaction" value="4"> 4</label>
+                        <label><input type="radio" name="oc16_satisfaction" value="5"> 5</label>
+                        <label><input type="radio" name="oc16_satisfaction" value="6"> 6</label>
+                        <label><input type="radio" name="oc16_satisfaction" value="7"> 7</label>
+                        <label><input type="radio" name="oc16_satisfaction" value="8"> 8</label>
+                        <label><input type="radio" name="oc16_satisfaction" value="9"> 9</label>
+                        <label><input type="radio" name="oc16_satisfaction" value="10"> 10</label>
+                    </div>
+                </div>
+            </div>
+
+             <div class="occupation-block">
+                <h3>17. Manger, dormir</h3>
+                 <div class="variable-group">
+                    <h4>Temps investi :</h4>
+                    <div class="options">
+                        <label><input type="radio" name="oc17_time" value="peu" required> Peu</label>
+                        <label><input type="radio" name="oc17_time" value="moyen"> Moyen</label>
+                        <label><input type="radio" name="oc17_time" value="beaucoup"> Beaucoup</label>
+                    </div>
+                </div>
+                <div class="variable-group">
+                    <h4>Importance (0-10) :</h4>
+                    <div class="options scale">
+                        <label><input type="radio" name="oc17_importance" value="0" required> 0</label>
+                        <label><input type="radio" name="oc17_importance" value="1"> 1</label>
+                        <label><input type="radio" name="oc17_importance" value="2"> 2</label>
+                        <label><input type="radio" name="oc17_importance" value="3"> 3</label>
+                        <label><input type="radio" name="oc17_importance" value="4"> 4</label>
+                        <label><input type="radio" name="oc17_importance" value="5"> 5</label>
+                        <label><input type="radio" name="oc17_importance" value="6"> 6</label>
+                        <label><input type="radio" name="oc17_importance" value="7"> 7</label>
+                        <label><input type="radio" name="oc17_importance" value="8"> 8</label>
+                        <label><input type="radio" name="oc17_importance" value="9"> 9</label>
+                        <label><input type="radio" name="oc17_importance" value="10"> 10</label>
+                    </div>
+                </div>
+                <div class="variable-group">
+                    <h4>Satisfaction (0-10) :</h4>
+                    <div class="options scale">
+                        <label><input type="radio" name="oc17_satisfaction" value="0" required> 0</label>
+                        <label><input type="radio" name="oc17_satisfaction" value="1"> 1</label>
+                        <label><input type="radio" name="oc17_satisfaction" value="2"> 2</label>
+                        <label><input type="radio" name="oc17_satisfaction" value="3"> 3</label>
+                        <label><input type="radio" name="oc17_satisfaction" value="4"> 4</label>
+                        <label><input type="radio" name="oc17_satisfaction" value="5"> 5</label>
+                        <label><input type="radio" name="oc17_satisfaction" value="6"> 6</label>
+                        <label><input type="radio" name="oc17_satisfaction" value="7"> 7</label>
+                        <label><input type="radio" name="oc17_satisfaction" value="8"> 8</label>
+                        <label><input type="radio" name="oc17_satisfaction" value="9"> 9</label>
+                        <label><input type="radio" name="oc17_satisfaction" value="10"> 10</label>
+                    </div>
+                </div>
+            </div>
+
+             <div class="occupation-block">
+                <h3>18. Trajets domicile-travail, tâches ménagères</h3>
+                 <div class="variable-group">
+                    <h4>Temps investi :</h4>
+                    <div class="options">
+                        <label><input type="radio" name="oc18_time" value="peu" required> Peu</label>
+                        <label><input type="radio" name="oc18_time" value="moyen" > Moyen</label>
+                        <label><input type="radio" name="oc18_time" value="beaucoup"> Beaucoup</label>
+                    </div>
+                </div>
+                <div class="variable-group">
+                    <h4>Importance (0-10) :</h4>
+                    <div class="options scale">
+                        <label><input type="radio" name="oc18_importance" value="0" required> 0</label>
+                        <label><input type="radio" name="oc18_importance" value="1"> 1</label>
+                        <label><input type="radio" name="oc18_importance" value="2"> 2</label>
+                        <label><input type="radio" name="oc18_importance" value="3"> 3</label>
+                        <label><input type="radio" name="oc18_importance" value="4"> 4</label>
+                        <label><input type="radio" name="oc18_importance" value="5"> 5</label>
+                        <label><input type="radio" name="oc18_importance" value="6"> 6</label>
+                        <label><input type="radio" name="oc18_importance" value="7"> 7</label>
+                        <label><input type="radio" name="oc18_importance" value="8"> 8</label>
+                        <label><input type="radio" name="oc18_importance" value="9"> 9</label>
+                        <label><input type="radio" name="oc18_importance" value="10"> 10</label>
+                    </div>
+                </div>
+                <div class="variable-group">
+                    <h4>Satisfaction (0-10) :</h4>
+                    <div class="options scale">
+                        <label><input type="radio" name="oc18_satisfaction" value="0" required> 0</label>
+                        <label><input type="radio" name="oc18_satisfaction" value="1"> 1</label>
+                        <label><input type="radio" name="oc18_satisfaction" value="2"> 2</label>
+                        <label><input type="radio" name="oc18_satisfaction" value="3"> 3</label>
+                        <label><input type="radio" name="oc18_satisfaction" value="4"> 4</label>
+                        <label><input type="radio" name="oc18_satisfaction" value="5"> 5</label>
+                        <label><input type="radio" name="oc18_satisfaction" value="6"> 6</label>
+                        <label><input type="radio" name="oc18_satisfaction" value="7"> 7</label>
+                        <label><input type="radio" name="oc18_satisfaction" value="8"> 8</label>
+                        <label><input type="radio" name="oc18_satisfaction" value="9"> 9</label>
+                        <label><input type="radio" name="oc18_satisfaction" value="10"> 10</label>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit">Analyser mes occupations</button>
+
+        </form>
+    </div>
+
+    <script>
+        // Liste des occupations dans l'ordre du formulaire pour faciliter la récupération
+        const occupations = [
+            "Temps passé avec le partenaire",
+            "S'engager avec les enfants, les parents, les frères et sœurs",
+            "Temps passé avec ses collègues ou partenaires",
+            "Du temps avec des amis",
+            "Exercice, physiothérapie",
+            "Psychothérapie, méditation",
+            "Prendre en compte les conséquences en amont de toute action",
+            "Pratique religieuse",
+            "Appartenance à des clubs locaux",
+            "Activisme bénévole",
+            "Travail",
+            "Cours, formations",
+            "Planifier l'investissement",
+            "Lecture, Objets de collection",
+            "Réseaux sociaux, télévision, jeux vidéo",
+            "Vacances, théâtre, événements sportifs",
+            "Manger, dormir",
+            "Trajets domicile-travail, tâches ménagères"
+        ];
+
+        const form = document.getElementById('occupation-form');
+
+        if (form) {
+            form.addEventListener('submit', function(event) {
+                // Empêcher l'envoi classique du formulaire
+                event.preventDefault();
+
+                const results = [];
+                let isValid = true; // Flag pour vérifier si tous les champs requis sont remplis
+
+                // Boucler sur chaque occupation pour collecter les réponses
+                occupations.forEach((occupationName, index) => {
+                    const ocIndex = index + 1; // L'index commence à 1 dans les noms (oc1, oc2, ...)
+
+                    // Récupérer les valeurs sélectionnées pour chaque variable
+                    const timeInput = form.elements[`oc${ocIndex}_time`];
+                    const importanceInput = form.elements[`oc${ocIndex}_importance`];
+                    const satisfactionInput = form.elements[`oc${ocIndex}_satisfaction`];
+
+                    // Vérifier que des options ont été sélectionnées pour cette occupation
+                    if (!timeInput.value || !importanceInput.value || !satisfactionInput.value) {
+                        isValid = false;
+                        // Optionnel : Mettre en évidence l'occupation qui manque une réponse
+                        const occupationBlock = form.querySelector(`h3`).parentElement; // Trouve le parent div.occupation-block
+                        if(occupationBlock) {
+                            occupationBlock.style.border = '2px solid red'; // Met une bordure rouge temporaire
+                        }
+                        // On pourrait aussi afficher un message à l'utilisateur
+                    } else {
+                        // Si la bordure rouge était présente, l'enlever (utile si l'utilisateur corrige)
+                        const occupationBlock = form.querySelector(`h3`).parentElement;
+                        if(occupationBlock && occupationBlock.style.border === '2px solid red') {
+                            occupationBlock.style.border = '1px solid #ddd';
+                        }
+
+                        // Stocker les résultats pour cette occupation
+                        results.push({
+                            name: occupationName,
+                            time: timeInput.value, // peu, moyen, beaucoup
+                            importance: parseInt(importanceInput.value, 10), // Convertir en nombre
+                            satisfaction: parseInt(satisfactionInput.value, 10) // Convertir en nombre
+                        });
+                    }
+                });
+
+                // Si tous les champs sont remplis, stocker les résultats et rediriger
+                if (isValid) {
+                    // Stocker les résultats dans le stockage local du navigateur
+                    localStorage.setItem('occupationResults', JSON.stringify(results));
+
+                    // Rediriger vers la page des résultats
+                    window.location.href = 'results.html';
+                } else {
+                    // Afficher un message d'erreur si des champs sont manquants
+                    alert("Veuillez répondre à toutes les questions avant de soumettre.");
+                    // Optionnel : faire défiler jusqu'au premier champ manquant
+                    const firstInvalidBlock = form.querySelector('.occupation-block').parentElement.querySelector('.occupation-block').querySelector('div[style*="red"]'); // Tentative de trouver le bloc avec la bordure rouge
+                    if (firstInvalidBlock) {
+                        firstInvalidBlock.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                }
+            });
+        } else {
+            console.error("Formulaire avec l'ID 'occupation-form' introuvable.");
+        }
+    </script>
+</body>
+</html>
