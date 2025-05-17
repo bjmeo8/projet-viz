@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Analyse des occupations - Résultat</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f4f4f4;
+      color: #333;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 20px auto;
+      padding: 20px;
+      background-color: #fff;
+      box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+    }
+    h1 {
+      text-align: center;
+      color: #0056b3;
+      margin-bottom: 30px;
+    }
+    #resultsChartContainer {
+      width: 100%;
+      min-height: 600px;
+      margin: 20px auto;
+      background-color: #fff;
+      padding: 20px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+      border-radius: 8px;
+      position: relative;
+    }
+    #chartWrapper {
+      width: 100%;
+      height: 700px;
+      position: relative;
+      margin-bottom: 20px;
+      background-color: #ffffff;
+    }
+    #legendContainer {
+      margin-top: 25px;
+      padding-top: 20px;
+      border-top: 1px solid #e0e0e0;
+      font-size: 0.9em;
+    }
+    .legend-section-title {
+      font-size: 1.1em;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+    .legend-size-container {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .legend-size-entry {
+      display: inline-block;
+      margin: 0 12px;
+      vertical-align: middle;
+    }
+    .legend-size-dot {
+      display: inline-block;
+      border-radius: 50%;
+      background-color: #555;
+      margin-right: 6px;
+      vertical-align: middle;
+    }
+    .color-legend-items {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-start;
+      margin-top: 10px;
+      gap: 8px 0;
+    }
+    .color-legend-item {
+      flex: 0 0 33%;
+      display: flex;
+      align-items: center;
+      padding: 3px 0;
+      box-sizing: border-box;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    .color-legend-item:hover {
+      background-color: #f0f0f0;
+      border-radius: 4px;
+    }
+    @media (max-width: 768px) {
+      .color-legend-item {
+        flex: 0 0 50%;
+      }
+    }
+    @media (max-width: 480px) {
+      .color-legend-item {
+        flex: 0 0 100%;
+      }
+    }
+    .legend-color-box {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      margin-right: 8px;
+      border: 1px solid #ccc;
+      vertical-align: middle;
+    }
+    #resultsSummary {
+      margin-top: 30px;
+      border-top: 1px solid #e0e0e0;
+      padding-top: 20px;
+    }
+    #resultsSummary h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #0056b3;
+    }
+    .occupation-summary {
+      margin-bottom: 15px;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      background-color: #f9f9f9;
+    }
+    .occupation-summary strong {
+      color: #333;
+    }
+    .occupation-summary p {
+      margin: 5px 0;
+      font-size: 0.95em;
+    }
+    .no-data {
+      text-align: center;
+      color: red;
+      font-weight: bold;
+      margin-top: 50px;
+      padding: 20px;
+    }
+    
+    /* Styles pour le tooltip personnalisé */
+    #customTooltip {
+      position: absolute;
+      display: none;
+      background-color: rgba(255, 255, 255, 0.95);
+      border: 1px solid #333;
+      border-radius: 6px;
+      padding: 8px 12px;
+      font-size: 14px;
+      pointer-events: none;
+      z-index: 1000;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+      max-width: 250px;
+      transform-origin: center center;
+      transition: opacity 0.15s;
+    }
+    .tooltip-title {
+      font-weight: bold;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 4px;
+      margin-bottom: 4px;
+      color: #0056b3;
+    }
+    .tooltip-content {
+      font-size: 13px;
+    }
+    .tooltip-content p {
+      margin: 3px 0;
+    }
+    
+    /* Style pour la légende survolée */
+    .highlight-occupation {
+      font-weight: bold;
+      text-decoration: underline;
+    }
+  </style>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>Résultats de votre analyse d'occupations</h1>
+    <div id="resultsChartContainer">
+      <div id="chartWrapper">
+        <canvas id="resultsChart"></canvas>
+        <div id="customTooltip"></div>
+      </div>
+      <div id="legendContainer"></div>
+    </div>
+    <div id="resultsSummary"></div>
+    <div class="no-data" style="display: none;">Aucune donnée disponible. Remplissez le questionnaire.</div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const useTestData = false; // ✅ Important : false pour activer localStorage
+      let occupationData = [];
+      let tooltipState = { active: false, occupation: null };
+
+      if (useTestData) {
+        // données de test (non utilisées ici)
+      } else {
+        try {
+          const storedData = localStorage.getItem('occupationResults');
+          if (storedData) {
+            occupationData = JSON.parse(storedData);
+            if (!Array.isArray(occupationData) || occupationData.length === 0 || !occupationData[0].name) {
+              occupationData = [];
+              console.warn("Format invalide pour 'occupationResults' dans localStorage.");
+            }
+          } else {
+            console.log("Aucune donnée 'occupationResults' dans localStorage.");
+          }
+        } catch (e) {
+          console.error("Erreur JSON:", e);
+          occupationData = [];
+        }
+      }
+
+      const resultsChartCanvas = document.getElementById('resultsChart');
+      const resultsSummaryDiv = document.getElementById('resultsSummary');
+      const legendContainer = document.getElementById('legendContainer');
+      const noDataDiv = document.querySelector('.no-data');
+      const customTooltip = document.getElementById('customTooltip');
+
+      if (!(occupationData && occupationData.length > 0)) {
+        if (noDataDiv) noDataDiv.style.display = 'block';
+        if (document.getElementById('resultsChartContainer')) document.getElementById('resultsChartContainer').style.display = 'none';
+        if (resultsSummaryDiv) resultsSummaryDiv.style.display = 'none';
+        if (legendContainer) legendContainer.style.display = 'none';
+        return;
+      }
+
+      if (noDataDiv) noDataDiv.style.display = 'none';
+
+      const colors = [
+        '#e41a1c', '#377eb8', '#4daf4a', '#984ea3', '#ff7f00', '#ffff33',
+        '#a65628', '#f781bf', '#999999', '#66c2a5', '#fc8d62', '#8da0cb',
+        '#e78ac3', '#a6d854', '#ffd92f', '#e5c494', '#b3b3b3', '#1b9e77'
+      ];
+      const timeBaseRadiusMap = { 'peu': 8, 'moyen': 16, 'beaucoup': 24 };
+      const timeLabels = { 'peu': 'Peu de temps', 'moyen': 'Temps moyen', 'beaucoup': 'Beaucoup de temps' };
+
+      const occupationColorMap = new Map();
+      occupationData.forEach((item) => {
+        if (!occupationColorMap.has(item.name)) {
+          occupationColorMap.set(item.name, colors[occupationColorMap.size % colors.length]);
+        }
+      });
+
+      const coordinateMap = new Map();
+      occupationData.forEach((item) => {
+        const key = `${item.importance}-${item.satisfaction}`;
+        const entry = { ...item, color: occupationColorMap.get(item.name) };
+        if (!coordinateMap.has(key)) coordinateMap.set(key, [entry]);
+        else coordinateMap.get(key).push(entry);
+      });
+
+      const chartPointsData = [];
+      coordinateMap.forEach((group) => {
+        group.forEach((item, i) => {
+          let xOffset = 0, yOffset = 0;
+          if (group.length > 1) {
+            const angle = (i / group.length) * 2 * Math.PI;
+            const offset = 0.7 * Math.min(2.5, group.length - 1);
+            xOffset = offset * Math.cos(angle);
+            yOffset = offset * Math.sin(angle);
+          }
+          chartPointsData.push({
+            x: item.satisfaction + xOffset,
+            y: item.importance + yOffset,
+            r: timeBaseRadiusMap[item.time] || 8,
+            name: item.name,
+            time: item.time,
+            importance: item.importance,
+            satisfaction: item.satisfaction,
+            backgroundColor: item.color,
+            borderColor: '#333',
+            borderWidth: 3,
+            hoverBorderWidth: 4,
+            hoverBorderColor: '#000'
+          });
+        });
+      });
+      
+      // Gestionnaire pour le tooltip personnalisé
+      function showTooltip(chart, pointIndex, posX, posY) {
+        const point = chart.data.datasets[0].data[pointIndex];
+        
+        customTooltip.innerHTML = `
+          <div class="tooltip-title">${point.name}</div>
+          <div class="tooltip-content">
+            <p><strong>Satisfaction:</strong> ${point.satisfaction}/10</p>
+            <p><strong>Importance:</strong> ${point.importance}/10</p>
+            <p><strong>Temps:</strong> ${timeLabels[point.time] || point.time}</p>
+          </div>
+        `;
+        
+        // Afficher temporairement le tooltip pour obtenir ses dimensions
+        customTooltip.style.display = 'block';
+        customTooltip.style.visibility = 'hidden';
+        
+        // Obtenir les dimensions
+        const tooltipWidth = customTooltip.offsetWidth;
+        const tooltipHeight = customTooltip.offsetHeight;
+        
+        // Obtenir les dimensions du conteneur du graphique
+        const chartContainer = document.getElementById('chartWrapper');
+        const chartRect = chartContainer.getBoundingClientRect();
+        
+        // Calculer la position relative au conteneur du graphique
+        const relX = posX - chartRect.left;
+        const relY = posY - chartRect.top;
+        
+        // Déterminer le meilleur placement du tooltip pour éviter les débordements
+        // Tester différentes positions autour du point pour trouver la meilleure
+        let positions = [
+          { left: relX + 15, top: relY },           // Droite
+          { left: relX - tooltipWidth - 15, top: relY }, // Gauche
+          { left: relX - tooltipWidth/2, top: relY + 15 }, // Bas
+          { left: relX - tooltipWidth/2, top: relY - tooltipHeight - 15 } // Haut
+        ];
+        
+        // Trouver la meilleure position (celle qui garde le tooltip entièrement dans la zone visible)
+        let bestPos = { left: relX, top: relY };
+        
+        for (let pos of positions) {
+          const isWithinX = pos.left >= 0 && (pos.left + tooltipWidth) <= chartRect.width;
+          const isWithinY = pos.top >= 0 && (pos.top + tooltipHeight) <= chartRect.height;
+          
+          if (isWithinX && isWithinY) {
+            bestPos = pos;
+            break;
+          }
+        }
+        
+        // Appliquer la position
+        customTooltip.style.left = bestPos.left + 'px';
+        customTooltip.style.top = bestPos.top + 'px';
+        customTooltip.style.visibility = 'visible';
+        
+        // Mettre à jour l'état du tooltip
+        tooltipState.active = true;
+        tooltipState.occupation = point.name;
+        
+        // Mettre en surbrillance l'élément correspondant dans la légende
+        highlightLegendItem(point.name);
+      }
+      
+      function hideTooltip() {
+        customTooltip.style.opacity = '0';
+        setTimeout(() => {
+          customTooltip.style.display = 'none';
+          customTooltip.style.opacity = '1';
+        }, 150);
+        tooltipState.active = false;
+        
+        // Réinitialiser la surbrillance de la légende
+        resetLegendHighlight();
+      }
+      
+      function highlightLegendItem(name) {
+        const legendItems = document.querySelectorAll('.color-legend-item');
+        legendItems.forEach(item => {
+          const itemName = item.getAttribute('data-name');
+          if (itemName === name) {
+            item.querySelector('span:last-child').classList.add('highlight-occupation');
+          }
+        });
+      }
+      
+      function resetLegendHighlight() {
+        const highlightedItems = document.querySelectorAll('.highlight-occupation');
+        highlightedItems.forEach(item => {
+          item.classList.remove('highlight-occupation');
+        });
+      }
+
+      Chart.register(ChartDataLabels);
+      const ctx = resultsChartCanvas.getContext('2d');
+      if (window.myOccupationChart instanceof Chart) window.myOccupationChart.destroy();
+
+      window.myOccupationChart = new Chart(ctx, {
+        type: 'bubble',
+        data: {
+          datasets: [{
+            label: 'Occupations',
+            data: chartPointsData,
+            backgroundColor: chartPointsData.map(p => p.backgroundColor),
+            borderColor: chartPointsData.map(p => p.borderColor),
+            borderWidth: chartPointsData.map(p => p.borderWidth)
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            datalabels: {
+              anchor: 'top',
+              align: 'top',
+              offset: ctx => ctx.dataset.data[ctx.dataIndex].r + 8,
+              display: true,
+              color: '#000',
+              font: { size: 11, weight: 'bold' },
+              backgroundColor: 'rgba(255,255,255,0.95)',
+              borderColor: '#444',
+              borderWidth: 1.5,
+              borderRadius: 4,
+              padding: { top: 4, bottom: 4, left: 6, right: 6 },
+              formatter: val => val.name.length > 10 ? val.name.substring(0, 9) + '.' : val.name,
+              rotation: 0
+            },
+            tooltip: {
+              enabled: false // Désactiver le tooltip par défaut
+            }
+          },
+          scales: {
+            x: {
+              min: -1,
+              max: 11,
+              title: { display: true, text: 'Satisfaction', font: { size: 14, weight: 'bold' } },
+              ticks: { stepSize: 1, font: { size: 12 } },
+              grid: {
+                drawBorder: true,
+                borderColor: '#666',
+                borderWidth: 1.5,
+                color: ctx => ctx.tick.value % 2 === 0 ? 'rgba(0,0,0,0.15)' : 'rgba(0,0,0,0.05)'
+              }
+            },
+            y: {
+              min: -1,
+              max: 11,
+              title: { display: true, text: 'Importance', font: { size: 14, weight: 'bold' } },
+              ticks: { stepSize: 1, font: { size: 12 } },
+              grid: {
+                drawBorder: true,
+                borderColor: '#666',
+                borderWidth: 1.5,
+                color: ctx => ctx.tick.value % 2 === 0 ? 'rgba(0,0,0,0.15)' : 'rgba(0,0,0,0.05)'
+              }
+            }
+          },
+          onHover: (event, elements) => {
+            const chartContainer = document.getElementById('chartWrapper');
+            if (!chartContainer || !event.native) return;
+            
+            const chartRect = chartContainer.getBoundingClientRect();
+            const relX = event.native.clientX - chartRect.left;
+            const relY = event.native.clientY - chartRect.top;
+            
+            if (elements && elements.length > 0) {
+              const element = elements[0];
+              const datasetIndex = element.datasetIndex;
+              const index = element.index;
+              const dataPoint = window.myOccupationChart.data.datasets[datasetIndex].data[index];
+              
+              showTooltip(window.myOccupationChart, index, event.native.clientX, event.native.clientY);
+              document.body.style.cursor = 'pointer';
+            } else {
+              hideTooltip();
+              document.body.style.cursor = 'default';
+            }
+          }
+        }
+      });
+
+      // Résumé
+      let summaryHTML = '<h2>Récapitulatif de vos occupations</h2>';
+      occupationData.forEach(item => {
+        summaryHTML += `<div class="occupation-summary">
+          <strong>${item.name}</strong>
+          <p>Temps: ${item.time}</p>
+          <p>Importance: ${item.importance}/10</p>
+          <p>Satisfaction: ${item.satisfaction}/10</p>
+        </div>`;
+      });
+      resultsSummaryDiv.innerHTML = summaryHTML;
+
+      // Légende avec interactions
+      let legendHTML = `<div class="legend-section-title">Légende</div>`;
+      legendHTML += '<div class="legend-size-container">';
+      legendHTML += `<span class="legend-size-entry"><span class="legend-size-dot" style="width: ${timeBaseRadiusMap.peu * 1.6}px; height: ${timeBaseRadiusMap.peu * 1.6}px;"></span> Peu de temps</span>`;
+      legendHTML += `<span class="legend-size-entry"><span class="legend-size-dot" style="width: ${timeBaseRadiusMap.moyen * 1.6}px; height: ${timeBaseRadiusMap.moyen * 1.6}px;"></span> Temps moyen</span>`;
+      legendHTML += `<span class="legend-size-entry"><span class="legend-size-dot" style="width: ${timeBaseRadiusMap.beaucoup * 1.6}px; height: ${timeBaseRadiusMap.beaucoup * 1.6}px;"></span> Beaucoup de temps</span>`;
+      legendHTML += '</div>';
+      legendHTML += '<div class="legend-section-title" style="margin-top:15px;">Couleurs des occupations :</div>';
+      legendHTML += '<div class="color-legend-items">';
+      occupationColorMap.forEach((color, name) => {
+        const shortName = (name.length > 22) ? name.substring(0, 20) + '...' : name;
+        legendHTML += `<div class="color-legend-item" data-name="${name}">
+          <span class="legend-color-box" style="background-color: ${color};"></span>
+          <span>${shortName}</span>
+        </div>`;
+      });
+      legendHTML += '</div>';
+      legendContainer.innerHTML = legendHTML;
+      
+      // Ajouter des écouteurs d'événements à la légende
+      const legendItems = document.querySelectorAll('.color-legend-item');
+      legendItems.forEach(item => {
+        const occupationName = item.getAttribute('data-name');
+        
+        item.addEventListener('mouseenter', () => {
+          // Trouver l'index du point correspondant
+          const pointIndex = chartPointsData.findIndex(point => point.name === occupationName);
+          if (pointIndex !== -1) {
+            // Mettre en surbrillance le point sur le graphique
+            window.myOccupationChart.data.datasets[0].borderWidth[pointIndex] = 5;
+            window.myOccupationChart.data.datasets[0].borderColor[pointIndex] = '#000';
+            window.myOccupationChart.update();
+            
+            // Ajouter la classe de surbrillance à l'élément de légende
+            item.querySelector('span:last-child').classList.add('highlight-occupation');
+          }
+        });
+        
+        item.addEventListener('mouseleave', () => {
+          // Réinitialiser tous les points
+          chartPointsData.forEach((point, i) => {
+            window.myOccupationChart.data.datasets[0].borderWidth[i] = 3;
+            window.myOccupationChart.data.datasets[0].borderColor[i] = '#333';
+          });
+          window.myOccupationChart.update();
+          
+          // Supprimer la classe de surbrillance
+          item.querySelector('span:last-child').classList.remove('highlight-occupation');
+        });
+      });
+    });
+  </script>
+</body>
+</html>
