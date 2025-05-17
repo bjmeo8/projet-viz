@@ -106,7 +106,6 @@
 
 
         /* Style de l'option sélectionnée (label qui CONTIENT un radio button checked) */
-        /* MODIFICATION ICI : Utilisation du sélecteur :has() */
         .options label:has(input[type="radio"]:checked) {
             background-color: #28a745; /* Vert du bouton Envoyer */
             color: white;
@@ -114,7 +113,6 @@
         }
 
         /* Style au survol de l'option sélectionnée (label qui CONTIENT un radio button checked) */
-        /* MODIFICATION ICI : Utilisation du sélecteur :has() */
         .options label:has(input[type="radio"]:checked):hover {
             background-color: #218838; /* Vert plus foncé */
             border-color: #218838;
@@ -1006,27 +1004,35 @@
                     const satisfactionInput = form.elements[`oc${ocIndex}_satisfaction`];
 
                     // Vérifier que des options ont été sélectionnées pour cette occupation
-                    if (!timeInput.value || !importanceInput.value || !satisfactionInput.value) {
-                        isValid = false;
-                        // Optionnel : Mettre en évidence l'occupation qui manque une réponse
-                        const occupationBlock = form.querySelector(`h3`).parentElement; // Trouve le parent div.occupation-block
-                        if(occupationBlock) {
-                            occupationBlock.style.border = '2px solid red'; // Met une bordure rouge temporaire
-                        }
-                        // On pourrait aussi afficher un message à l'utilisateur
-                    } else {
-                        // Si la bordure rouge était présente, l'enlever (utile si l'utilisateur corrige)
-                        const occupationBlock = form.querySelector(`h3`).parentElement;
-                        if(occupationBlock && occupationBlock.style.border === '2px solid red') {
-                            occupationBlock.style.border = '1px solid #ddd';
-                        }
+                    // Utiliser .value sur un groupe de radios non sélectionné peut donner undefined ou une chaîne vide
+                    // Vérifier si .value est non vide et si l'élément existe
+                    const selectedTime = timeInput ? timeInput.value : '';
+                    const selectedImportance = importanceInput ? importanceInput.value : '';
+                    const selectedSatisfaction = satisfactionInput ? satisfactionInput.value : '';
 
-                        // Stocker les résultats pour cette occupation
+
+                    if (!selectedTime || !selectedImportance || !selectedSatisfaction) {
+                        isValid = false;
+                        // Trouver le bloc d'occupation pour le marquer visuellement
+                        // Utilisation de querySelector combiné pour trouver l'élément parent de h3:nth-of-type
+                        const occupationBlock = form.querySelector(`div.occupation-block:nth-of-type(${ocIndex})`);
+                         if(occupationBlock) {
+                             occupationBlock.style.border = '2px solid red';
+                         }
+                         console.warn(`Occupation ${occupationName} (${ocIndex}): Réponses manquantes.`);
+                    } else {
+                         // Enlever la bordure rouge si l'utilisateur a corrigé
+                         const occupationBlock = form.querySelector(`div.occupation-block:nth-of-type(${ocIndex})`);
+                         if(occupationBlock && occupationBlock.style.border === '2px solid red') {
+                             occupationBlock.style.border = '1px solid #ddd';
+                         }
+
+                         // Stocker les résultats pour cette occupation
                         results.push({
                             name: occupationName,
-                            time: timeInput.value, // peu, moyen, beaucoup
-                            importance: parseInt(importanceInput.value, 10), // Convertir en nombre
-                            satisfaction: parseInt(satisfactionInput.value, 10) // Convertir en nombre
+                            time: selectedTime, // peu, moyen, beaucoup
+                            importance: parseInt(selectedImportance, 10), // Convertir en nombre
+                            satisfaction: parseInt(selectedSatisfaction, 10) // Convertir en nombre
                         });
                     }
                 });
@@ -1035,16 +1041,18 @@
                 if (isValid) {
                     // Stocker les résultats dans le stockage local du navigateur
                     localStorage.setItem('occupationResults', JSON.stringify(results));
+                    console.log("Données enregistrées dans Local Storage:", results);
+
 
                     // Rediriger vers la page des résultats
-                    window.location.href = 'results.html';
+                    window.location.href = 'result.html'; // Assurez-vous que le nom du fichier est correct
                 } else {
                     // Afficher un message d'erreur si des champs sont manquants
                     alert("Veuillez répondre à toutes les questions avant de soumettre.");
                     // Optionnel : faire défiler jusqu'au premier champ manquant
-                    const firstInvalidBlock = form.querySelector('.occupation-block').parentElement.querySelector('.occupation-block').querySelector('div[style*="red"]'); // Tentative de trouver le bloc avec la bordure rouge
+                    const firstInvalidBlock = form.querySelector('div.occupation-block[style*="red"]');
                     if (firstInvalidBlock) {
-                        firstInvalidBlock.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                         firstInvalidBlock.scrollIntoView({ behavior: 'smooth', block: 'center' });
                     }
                 }
             });
